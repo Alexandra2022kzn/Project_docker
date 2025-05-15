@@ -1,4 +1,3 @@
-
 FROM ubuntu:22.04
 
 ENV SOFT=/soft
@@ -20,23 +19,27 @@ RUN apt-get update && apt-get install -y \
 RUN wget https://github.com/ebiggers/libdeflate/releases/download/v1.24/libdeflate-1.24.tar.gz && \
     tar -xzf libdeflate-1.24.tar.gz && \
     cd libdeflate-1.24 && \
-    cmake -B build && \
-    cmake --build build
+    cmake -B build -DCMAKE_INSTALL_PREFIX=${SOFT}/libdeflate_br250512 && \
+    cmake --build build && \
+    cmake --install build && \
+    cd .. && rm -rf libdeflate-1.24 libdeflate-1.24.tar.gz
 
 ### HTSlib-1.21 (Sep 12, 2024) ###
 
 RUN wget https://github.com/samtools/htslib/releases/download/1.21/htslib-1.21.tar.bz2 && \
     tar -xjf htslib-1.21.tar.bz2 && \
     cd htslib-1.21 && \
-    ./configure && \
-    make && \
-    make install
+    ./configure --prefix=${SOFT}/htslib_br240912 && \
+    make -j$(nproc) && \
+    make install && \
+    cd .. && rm -rf htslib-1.21 htslib-1.21.tar.bz2
 
 ### Samtools-1.21 (Sep 12, 2024) ###
 
 RUN wget https://github.com/samtools/samtools/releases/download/1.21/samtools-1.21.tar.bz2 && \
     tar -xjf samtools-1.21.tar.bz2 && \
     cd samtools-1.21 && \
-    ./configure && \
-    make && \
-    make install
+    ./configure --prefix=${SOFT}/samtools_br240912 && \
+    make -j$(nproc) && \
+    make install && \
+    cd .. && rm -rf samtools-1.21 samtools-1.21.tar.bz2
