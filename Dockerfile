@@ -2,7 +2,7 @@ FROM ubuntu:22.04
 
 ENV SOFT=/soft
 
-ENV PATH="${SOFT}/libdeflate_br250512/bin:${SOFT}/samtools_br240912/bin:${SOFT}/htslib_br240912/bin:$PATH"
+ENV PATH="${SOFT}/libdeflate_br250512/bin:${SOFT}/htslib_br240912/bin:${SOFT}/samtools_br240912/bin:${SOFT}/bcftools_br240912/bin:$PATH"
 ENV LD_LIBRARY_PATH="${SOFT}/libdeflate_br250512/lib:${SOFT}/htslib_br240912/lib:$LD_LIBRARY_PATH"
 
 ENV SAMTOOLS="${SOFT}/samtools_br240912/bin/samtools"
@@ -17,7 +17,10 @@ RUN apt-get update && apt-get install -y \
 	 libbz2-dev \
 	 liblzma-dev \
 	 libcurl4-openssl-dev \
-	 libncurses-dev
+	 libncurses-dev \
+     libperl-dev \
+     libgsl0-dev
+
 
 ### libdeflate v1.24 (May 12, 2025) ###
 
@@ -50,3 +53,13 @@ RUN wget https://github.com/samtools/samtools/releases/download/1.21/samtools-1.
     make -j$(nproc) && \
     make install && \
     cd .. && rm -rf samtools-1.21 samtools-1.21.tar.bz2
+
+### Bcftools-1.21 (Sep 12, 2024) ###
+
+RUN wget https://github.com/samtools/bcftools/releases/download/1.21/bcftools-1.21.tar.bz2 && \
+    tar -xjf bcftools-1.21.tar.bz2 && \
+    cd bcftools-1.21 && \
+    ./configure --prefix=${SOFT}/bcftools_br240912 --with-htslib=${SOFT}/htslib_br240912 && \
+    make && \
+    make install && \
+    cd .. && rm -rf bcftools-1.21 bcftools-1.21.tar.bz2
