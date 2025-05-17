@@ -6,21 +6,24 @@ ENV PATH="${SOFT}/libdeflate_br250512/bin:${SOFT}/htslib_br240912/bin:${SOFT}/sa
 ENV LD_LIBRARY_PATH="${SOFT}/libdeflate_br250512/lib:${SOFT}/htslib_br240912/lib:$LD_LIBRARY_PATH"
 
 ENV SAMTOOLS="${SOFT}/samtools_br240912/bin/samtools"
+ENV VCFTOOLS="${SOFT}/vcftools_br250515/bin/vcftools"
+ENV BCFTOOLS="${SOFT}/bcftools_br240912/bin/bcftools"
 
 RUN apt-get update && apt-get install -y \
-	 wget \
-	 bzip2 \  
-	 build-essential \
-	 cmake \
-	 autoconf \
-	 zlib1g-dev \
-	 libbz2-dev \
-	 liblzma-dev \
-	 libcurl4-openssl-dev \
-	 libncurses-dev \
-         libperl-dev \
-         libgsl0-dev \
-         pkg-config
+	wget \
+	bzip2 \  
+	build-essential \
+	cmake \
+	autoconf \
+	zlib1g-dev \
+	libbz2-dev \
+	liblzma-dev \
+	libcurl4-openssl-dev \
+	libncurses-dev \
+    	libperl-dev \
+    	libgsl0-dev \
+    	pkg-config && \
+	apt-get clean && rm -rf /var/lib/apt/lists/*
 
 
 ### libdeflate v1.24 (May 12, 2025) ###
@@ -61,7 +64,7 @@ RUN wget https://github.com/samtools/bcftools/releases/download/1.21/bcftools-1.
     tar -xjf bcftools-1.21.tar.bz2 && \
     cd bcftools-1.21 && \
     ./configure --prefix=${SOFT}/bcftools_br240912 --with-htslib=${SOFT}/htslib_br240912 && \
-    make && \
+    make -j$(nproc) && \
     make install && \
     cd .. && rm -rf bcftools-1.21 bcftools-1.21.tar.bz2
 
@@ -71,6 +74,6 @@ RUN wget https://github.com/vcftools/vcftools/releases/download/v0.1.17/vcftools
     tar -xzf vcftools-0.1.17.tar.gz && \
     cd vcftools-0.1.17 && \
     ./configure --prefix=${SOFT}/vcftools_br250515 && \
-    make && \
+    make -j$(nproc) && \
     make install && \
     cd .. && rm -rf vcftools-0.1.17 vcftools-0.1.17.tar.gz
