@@ -15,16 +15,19 @@ RUN apt-get update && apt-get install -y \
 	build-essential \
 	cmake \
 	autoconf \
+    python3 \
+    python3-pip \
 	zlib1g-dev \
 	libbz2-dev \
 	liblzma-dev \
 	libcurl4-openssl-dev \
 	libncurses-dev \
-    	libperl-dev \
-    	libgsl0-dev \
-    	pkg-config && \
+    libperl-dev \
+    libgsl0-dev \
+    pkg-config && \
 	apt-get clean && rm -rf /var/lib/apt/lists/*
 
+RUN pip3 install pandas pysam
 
 ### libdeflate v1.24 (May 12, 2025) ###
 
@@ -77,3 +80,9 @@ RUN wget https://github.com/vcftools/vcftools/releases/download/v0.1.17/vcftools
     make -j$(nproc) && \
     make install && \
     cd .. && rm -rf vcftools-0.1.17 vcftools-0.1.17.tar.gz
+
+WORKDIR /fp_snp
+
+# предположительно скрипт находится в папке /mnt/scripts/FP_SNP.py на локальной машине
+COPY /mnt/scripts/FP_SNP.py /fp_snp/FP_SNP.py
+COPY /mnt/data/FP_SNPs_10k_GB38_twoAllelsFormat.tsv /fp_snp/FP_SNPs_10k_GB38_twoAllelsFormat.tsv
